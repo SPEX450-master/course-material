@@ -53,7 +53,7 @@ A scalar (1 x 1):
 
 A row vector (1 x 5):
 
-<img src="../figs/row_vector.pdf" alt="Row vector" width="150">
+<img src="../figs/row_vector.pdf?raw=true" alt="Row vector" width="150">
 
 A column vector (5 x 1):
 

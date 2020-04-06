@@ -203,7 +203,7 @@ So in order to select the required elements from the matrix we would write:
 \end{enumerate}
 
 \subsection{Using basic mathematical operators}
-MATLAB can interpret a number of basic operators to provide simple data calculations without having to use the in-built functions.  We will look at the 5 most common; \emph{Addition}, \emph{Subtraction}, \emph{Multiplication}, \emph{Division} and \emph{Power}.
+MATLAB can interpret a number of basic operators to provide simple data calculations without having to use the in-built functions.  We will look at the five most common; \emph{Addition}, \emph{Subtraction}, \emph{Multiplication}, \emph{Division} and \emph{Power}.
 \begin{quotation}
 \begin{tabular}{l c}
 \toprule
@@ -252,26 +252,26 @@ To create a new variable \textbf{c} as \textbf{a} to the power of \textbf{b} we 
 
 \subsection{Plotting the data}
 In this section we will look at how to plot graphs of some real data and use these plots to inspect the data more closely.  
-The data that we loaded in the previous section, in the variable \textbf{CSVData}, contains EMG data from 6 muscles with the values expressed in Volts.  
+The data that we loaded in the previous section, in the variable \textbf{datacsv}, contains EMG data from six muscles with the values expressed in volts.  
 The first column of the data is the frame number and there are 200 frames per second.  
 There is something slightly wrong with the data and this will need correcting before any further analysis can be performed.
 
 \subsubsection*{Exercise}
 \begin{enumerate}
-	\item Load the file `Data.mat' to add the variable \textbf{CSVData} back into the workspace.
-	\item Use the plot tool from the \textbf{Variable Editor} to plot the EMG data in the second column.
+	\item Load the file \texttt{Data.mat} to add the variable \textbf{datacsv} back into the workspace.
+	\item Use the plot tool from the \textbf{Variables} window to plot the EMG data in the second column.
     	\begin{itemize}
-    		\item Display the variable \textbf{CSVData} in the \textbf{Variable Editor}.
+    		\item Display the variable \textbf{datacsv} in the \textbf{Variables} window.
     		\item Highlight the second column by clicking on the number `2' at the top of the column.
     		\item In the \textbf{PLOTS} tab, click the plot button \includegraphics[scale=0.3]{plot_icon.png} to display a graph of the data.
     		\item Close the plot window by clicking the red `X' in the top right corner (or the red button on a Mac).
-    		\item Take note of the output from the plot tool that has appeared in the \textbf{Command Window}.		
+    		\item Take note of the output from the plot tool that has appeared in the \textbf{Command Window}.	The "plot" function is \emph{called} and is \emph{passed} all rows of the second column of \textbf{datacsv} as input.	
     	\end{itemize}
 	\item From the \textbf{Command Window} use the plot function to plot the EMG data in the second column.
 	\begin{itemize}
 		\item Type the following:
 		\begin{lstlisting}[style=Matlab-editor]
->> plot(CSVData(:,2));
+>> plot(datacsv(:,2));
 		\end{lstlisting}
 		\item You should see the same plot as before:
 	\end{itemize}
@@ -282,9 +282,9 @@ There is something slightly wrong with the data and this will need correcting be
 	\begin{itemize}
 		\item Type the following:
 		\begin{lstlisting}[style=Matlab-editor]
->> plot(CSVData(:,2:7));
+>> plot(datacsv(:,2:7));
 		\end{lstlisting}		
-		\item Notice how none of the EMG signals are centred around zero Volts.
+		\item Notice how none of the EMG signals are centred around zero volts.
 	\end{itemize}
 	\begin{center}
 		\includegraphics[width=\textwidth]{csvdata2-7.png}
@@ -300,16 +300,16 @@ From what we have seen from the data we have four main tasks to complete before 
 	\item Correct the first column of data from frame numbers to time, in seconds.	
 	\item Baseline correct the EMG signals so that they are centred around zero.
 	\item Rectify the EMG signals (convert values to positive amplitudes).
-	\item Convert the Volts (V) to mV for each EMG signal.
+	\item Convert the volts (V) to mV for each EMG signal.
 \end{enumerate}
 
 \subsubsection*{Exercise}
 \begin{enumerate}
-	\item Duplicate the variable \textbf{CSVData} to create an identical new variable called \textbf{emgdata}.
+	\item Duplicate the variable \textbf{datacsv} to create an identical new variable called \textbf{emgdata}.
 	\begin{itemize}
-		\item Copy the \textbf{CSVData} to a new variable \textbf{emgdata}.  Type the following:
+		\item Copy the \textbf{datacsv} to a new variable \textbf{emgdata}.  Type the following:
 		\begin{lstlisting}[style=Matlab-editor]
->> emgdata = CSVData;
+>> emgdata = datacsv;
 		\end{lstlisting}		
 	\end{itemize}
 	
@@ -317,7 +317,7 @@ From what we have seen from the data we have four main tasks to complete before 
 	\begin{itemize}
 		\item Divide all of the values in column 1 by 200 to convert from frames to seconds. Type the following:
 		\begin{lstlisting}[style=Matlab-editor]
->> emgdata(:,1) = emgdata(:,1)/200;
+>> emgdata(:,1) = datacsv(:,1)/200;
 		\end{lstlisting}		
 	\end{itemize}	
 	
@@ -325,16 +325,16 @@ From what we have seen from the data we have four main tasks to complete before 
 	\begin{itemize}
 		\item Use MATLAB's \textbf{mean} function to find the mean value for each EMG signal.  Type:
 		\begin{lstlisting}[style=Matlab-editor]
->> emgmeans = mean(emgdata(:,2:7));
+>> emgmeans = mean(datacsv(:,2:7));
 		\end{lstlisting}		
-		\item Delete the mean value for the EMG signal from all of the values.  After pressing \textbf{Enter} to submit the first line, use the up arrow to prevent re-typing the whole line again.
+		\item Subtract the mean value for the EMG signal from all of the values.  After pressing \textbf{Enter} to submit the first line, use the up arrow to prevent re-typing the whole line again.
 		\begin{lstlisting}[style=Matlab-editor]
->> emgdata(:,2) = emgdata(:,2) - emgmeans(1);
->> emgdata(:,3) = emgdata(:,3) - emgmeans(2);
->> emgdata(:,4) = emgdata(:,4) - emgmeans(3);
->> emgdata(:,5) = emgdata(:,5) - emgmeans(4);
->> emgdata(:,6) = emgdata(:,6) - emgmeans(5);
->> emgdata(:,7) = emgdata(:,7) - emgmeans(6);
+>> emgdata(:,2) = datacsv(:,2) - emgmeans(1);
+>> emgdata(:,3) = datacsv(:,3) - emgmeans(2);
+>> emgdata(:,4) = datacsv(:,4) - emgmeans(3);
+>> emgdata(:,5) = datacsv(:,5) - emgmeans(4);
+>> emgdata(:,6) = datacsv(:,6) - emgmeans(5);
+>> emgdata(:,7) = datacsv(:,7) - emgmeans(6);
 		\end{lstlisting}
 	\end{itemize}
 	\item Use the plot function to plot all six of the corrected EMG channels on a single graph in a \textbf{new figure}.
@@ -344,7 +344,7 @@ From what we have seen from the data we have four main tasks to complete before 
 >> figure;
 >> plot(emgdata(:,2:7));
 		\end{lstlisting}		
-		\item Notice how all of the EMG signals are now centred around zero Volts.  
+		\item Notice how all of the EMG signals are now centred around zero volts.  
 		You should be able to compare this plot with the plot from the previous exercise.			
 	\end{itemize}		
 	\begin{center}
@@ -362,7 +362,7 @@ From what we have seen from the data we have four main tasks to complete before 
 >> emgdata(:,2:7) = abs(emgdata(:,2:7));
 		\end{lstlisting}
 	\end{itemize}
-	\item Convert the EMG signals from Volts (V) to milli Volts (mV).
+	\item Convert the EMG signals from volts (V) to millivolts (mV).
 	\begin{itemize}
 		\item Multiply all of the values in the EMG columns by 1000. 
 		Type the following:
@@ -373,7 +373,7 @@ From what we have seen from the data we have four main tasks to complete before 
 	\item Plot the EMG data for the first EMG signal.  The time column should be on the $x$-axis and the EMG amplitude in mV should be the $y$-axis
 	\begin{itemize}
 		\item Use MATLAB's help documentation to find out how to plot the $x$ and $y$ data on the required axes.
-		\item Use the \textbf{plot} function to plot the graph of signal 1 (found in column 2 of the variable \textbf{emgdata}).
+		\item Use the \textbf{plot} function to plot the graph of EMG signal 1 (found in column 2 of the variable \textbf{emgdata}).
 		\begin{lstlisting}[style=Matlab-editor]
 >> plot(emgdata(:,1), emgdata(:,2));
 		\end{lstlisting}		
@@ -384,7 +384,7 @@ From what we have seen from the data we have four main tasks to complete before 
 >> title('The EMG amplitude of signal 1');
 		\end{lstlisting}	
 		\item We could now repeat this process for each of the other five signals but this would be repetitive and time consuming.  
-		In the next section we will look at a number of ways to prevent the repetition and speed this process up.
+		Next week we will look at a number of ways to prevent the repetition and speed this process up.
 	\end{itemize}
 \end{enumerate}
 \begin{figure}[H]

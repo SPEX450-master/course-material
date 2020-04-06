@@ -19,52 +19,55 @@ We will cover the most common methods of data importing in this section.
 \subsection{Loading data from text files}
 Most data collection software has an option to export the data into a text file format (often called ASCII text, Comma Separated Variables (CSV) or Tab delimited).  
 These formats can be viewed in a standard text editor such as Microsoft Notepad, or Apple's TextEdit.  
-The variables are separated into \textbf{columns} by a `delimiter' character, such as a tab, a comma or a semi-colon and \textbf{rows} by a new line and/or carriage return character. 
-Comma (often saved with the `.csv' extension) or tab (often saved with the `.dat' or `.txt' extension) delimited formats are the most common.  
-MATLAB has an `Import data' function that is designed to import a wide variety of data file types.
+The variables are separated into \textbf{columns} by a \emph{delimiter} character, such as a tab, a comma or a semi-colon and \textbf{rows} by a new line and/or carriage return character. 
+Comma (often saved with the \textbf{.csv} extension) or tab (often saved with the \textbf{.dat} or \textbf{.txt} extension) delimited formats are the most common.  
+MATLAB has an \textbf{Import data} function that is designed to import a wide variety of data file types.
 
+%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection*{Exercise}
 \begin{enumerate}
-	\item Locate and copy the folder containing the reference material data for these MATLAB tutorials.  Save the contents to a place that you can easily find. 
-	\item Open MATLAB, reset the display and browse for the example files
+	\item Locate and copy the example files at the module's GitHub page by navigating to \textbf{SPEX450-master/course-material/2-Getting\_started/data}. Next, click on \texttt{data\_csv.csv}. In the view that opens, click the \textbf{Raw} button and in the new page right-click and choose \textbf{Save As...} and save the file onto your computer. Repeat for the \texttt{data\_tab.txt} file. 
+	\item Open MATLAB and browse for the example files
 	\begin{itemize}
 		\item From the \textbf{Home} tab on MATLAB's ribbon select \textbf{Import Data}.
 		\item Use the \textbf{Current Directory} window to browse for the folder where you saved the reference material.
 	\end{itemize}
 	\item Load the two example data files into MATLAB's text editor and inspect the differences
 	\begin{itemize}	
-		\item Browse to the folder called \textbf{data} within this week's folder structure.
-		\item Right click on the file `data\_csv.csv' and choose `Open as Text'.
-		\item Do the same for the file `data\_tab.txt' (or simply select `Open').
+		\item Browse to where you saved the files.
+		\item Right click on the file \texttt{data\_csv.csv} and choose \textbf{Open as Text}.
+		\item Do the same for the file \texttt{data\_tab.txt} (or simply select \textbf{Open}).
 		\item Inspect the two files in the \textbf{Editor} window to see the different ways the same data have been saved.		
 	\end{itemize}
 	\item Import the data using MATLAB's \textbf{Import Wizard}
 	\begin{itemize}	
-		\item Right click on the file `data\_csv.csv' and choose \textbf{Import Data...}
-		\item The \textbf{Import Wizard} should have correctly set the column separator to `Comma'. For \textbf{Output Type:}, choose `Numeric Matrix'.
-		\item Click \textbf{Import Selection} to complete the import process and create the variable `data' in the workspace.
-		\item Repeat the process to import the data from the file `data\_tab.txt'.
+		\item Right click on the file \texttt{data\_csv.csv} and choose \textbf{Import Data...}
+		\item The \textbf{Import Wizard} should have correctly set the column separator to \textbf{Comma}. For \textbf{Output Type:}, choose \textbf{Numeric Matrix}.
+		\item Click \textbf{Import Selection} to complete the import process and create the variable \textbf{data} in the workspace.
+		\item Repeat the process to import the data from the file \texttt{data\_tab.txt}.
 		\item You should see two variables called, \textbf{datacsv} and \textbf{datatab} in the \textbf{Workspace} window. Double-clicking on either will open it in the \textbf{Variables} window, which allows you to view the contents similar to a spreadsheet.
 		\item Clear the workspace by clicking the \textbf{Clear Workspace} button in the \textbf{Home} tab or by typing "clear".
-		\item Import either of the previous files and select `column vectors' instead of `Numeric Matrix'. Now you have separate variables (vectors) in the workspace for each column in the file.
+		\item Import either of the previous files and select \textbf{Column vectors} instead of \textbf{Numeric Matrix}. Notice the difference, now the columns from the file are stored as separate (vector) variables in the workspace.
 	\end{itemize}
 \end{enumerate}
 
 \subsection{Saving and loading data through a MATLAB data file}
-When you start to perform more complex and time-consuming analysis you will need to save the changes to your data so that you can continue in future sessions.  
+When you start to perform more complex and time-consuming analyses you will need to save the changes to your data so that you can continue in future sessions.  
 MATLAB allows you to save all of the variables in your workspace into one file.  
-This MATLAB data file has the `.mat' file extension.
+This MATLAB data file has the \textbf{.mat} file extension.
+
+%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection*{Exercise}
 \begin{enumerate}
 	\item Begin using the text commands and get a list of the current variables.
 	\begin{itemize}
-		\item Within the \textbf{Command Window} and next to the `$>>$' symbol, type the command \textbf{who} and press enter.	You should see the following:
+		\item Within the \textbf{Command Window} and next to the `$>>$' symbol, type the command "who" and press enter.	You should see the following:
 		\begin{lstlisting}[style=Matlab-editor]
 >> who
 		
 Your variables are:
 		
-CSVData 	TABData
+datacsv 	datatab
 		\end{lstlisting}	
 		
 	\end{itemize}
@@ -74,8 +77,8 @@ CSVData 	TABData
     		\begin{lstlisting}[style=Matlab-editor]
     >> save Data
     		\end{lstlisting}	
-    		\item `Data.mat' will appear as a new file in the \textbf{Current Directory} window.
-    		\item Delete the file `Data.mat' from the \textbf{Current Directory} window.
+    		\item \texttt{Data.mat} will appear as a new file in the \textbf{Current Folder} window.
+    		\item Delete the file \texttt{Data.mat} from the \textbf{Current Folder} window.
     	\end{itemize}
 	\item Use the same command but this time in the \textbf{Function} format
     	\begin{itemize}	
@@ -84,15 +87,15 @@ CSVData 	TABData
     >> save('Data.mat')
     		\end{lstlisting}	
     		\item You will notice the information in the brackets is highlighted purple, the single quotes surrounding Data.mat indicate a \textbf{string}. MATLAB uses \emph{syntax highlighting} to help you read your code.	
-    		\item Use the additional input parameter to save only the variable `CSVData'.  Use the \textbf{up arrow} to recall the previous command and then modify it to say "save('Data.mat', 'CSVData')" and press enter.\\
+    		\item Use the additional input parameter to save only the variable \textbf{datacsv}.  With your cursor in the command window, use the \textbf{up arrow} on your keyboard to recall the previous command and then modify it to say "save('Data.mat', 'datacsv')" and press enter.\\
     		\begin{lstlisting}[style=Matlab-editor]
-    >> save('Data.mat', 'CSVData')
+    >> save('Data.mat', 'datacsv')
     		\end{lstlisting}	
     	\end{itemize}	
 	
-	\item Clear the workspace and reload the data from the Data file.
+	\item Clear the workspace and reload the data from the \textbf{.mat} data file.
 	\begin{itemize}	
-		\item Clear the workspace using the \textbf{clear} command.
+		\item Clear the workspace using the "clear" command.
 		\begin{lstlisting}[style=Matlab-editor]
 >> clear
 		\end{lstlisting}
@@ -105,7 +108,7 @@ CSVData 	TABData
 
 \subsection{Exporting data to Excel}
 After completing the data analysis you may need to export the data so it can be used in another program.  
-For example, you may wish to save data into a Microsoft Excel file for viewing, sharing with others or for importing into SPSS or R for statistical analysis.
+For example, you may wish to save data into a spreadsheet file for viewing, sharing with others or for importing into a statistical package for analysis.
 
 \subsubsection*{Exercise}
 \begin{enumerate}
@@ -115,23 +118,23 @@ For example, you may wish to save data into a Microsoft Excel file for viewing, 
 		\begin{lstlisting}[style=Matlab-editor]		
 >> doc xlswrite
 		\end{lstlisting}
-		\item Examine the \textbf{Syntax} information and \textbf{Examples} then type (or copy, paste and modify) the command to export the data in the \textbf{CSVData} variable into an excel file called `TestExcelData.xls'.
+		If the documentation does not load on the Student Desktop (I haven't checked this), simply search for \textbf{matlab xlswrite} in your web browser.
+		\item Examine the \textbf{Syntax} information and \textbf{Examples} then type (or copy, paste and modify) the command to export the data in the \textbf{datacsv} variable into an excel file called \texttt{TestExcelData.xls}\footnote{Note that if you're running MATLAB on a Mac operating system, the file you just created will be \texttt{TestExcelData.csv}. Reading and writing Excel files on a Mac in MATLAB has limited functionality and can be quite annoying at times (grrr!).}.
 		\begin{lstlisting}[style=Matlab-editor]
->> xlswrite('TestExcelData.xls', CSVData)
+>> xlswrite('TestExcelData.xls', datacsv)
 		\end{lstlisting}	
-		\item Open the file `TestExcelData.xls' in Excel to confirm that the process worked.  
-		(NOTE: Double-clicking on the file in the \textbf{Current Directory} will begin the \textbf{Import Wizard}.  To open in Excel, right click the file and choose `Open Outside MATLAB'.)
+		\item Open the file \texttt{TestExcelData.xls} in Excel to confirm that the process worked\footnote{Also note that double-clicking on the file in the \textbf{Current Directory} will begin the \textbf{Import Wizard}.  To open in Excel, right click the file and choose \textbf{Open Outside MATLAB}.}.
 	\end{itemize}
 \end{enumerate}
 
 \section{Basic data analysis}
 \subsection{Accessing elements in a matrix}
 Now that we are able to get the data into MATLAB we are ready to start processing them.  
-In section \ref{sec:matrices} we introduced the structure of a matrix/array; being a collection of rows and columns.  
+In Week 1 we introduced the structure of a matrix/array; being a collection of rows and columns.  
 In MATLAB we describe a matrix as having an \textbf{m} number of rows and an \textbf{n} number of columns.  
 Where \textbf{m} and \textbf{n} are used to represent a range of possible values.  
 Let us have a look at a simple matrix with 4 rows and 2 columns; a 
-4 by 2 matrix or more commonly noted as a ($4\times2$) matrix.  
+4 by 2 matrix or more commonly noted as a $4\times2$ matrix.  
 Assume that the matrix has the variable name \textbf{D}.\\
 \[ \textbf{D} = \left[ \begin{array}{cc}
 a & b\\
@@ -148,7 +151,7 @@ In MATLAB we would write:
 \end{lstlisting}	
 Now, say we want to reference elements \emph{`a'} and \emph{`b'}, i.e.~all the columns in row 1.  
 In MATLAB we can use the colon (:) to specify `all'.  
-So, in MATLAB we would write:
+So, we would write:
 \begin{lstlisting}[style=Matlab-editor]
 >> D(1,:)
 \end{lstlisting}
@@ -169,29 +172,29 @@ So in order to select the required elements from the matrix we would write:
 		
 \subsubsection*{Exercise}
 \begin{enumerate}
-	\item Use MATLAB's random generator function to create a ($10\times4$) matrix of random numbers. (NOTE: Because we are using a random number generator your matrix values will be different from your classmates!)
+	\item Use MATLAB's random generator function to create a $10\times4$ matrix of random numbers. (NOTE: Because we are using a random number generator your matrix values will be different from your classmates!)
     	\begin{itemize}
-    		\item Use the $fx$ button to the left of the $>>$ character in the \textbf{Command Window} to search for a `uniformly distributed random generator' function.
+    		\item Use the $fx$ button to the left of the $>>$ character in the \textbf{Command Window} to search for a `uniformly distributed random numbers' function.
     		\item Examine the help information to determine the correct syntax to create a matrix of random numbers with 10 rows and 4 columns.		
     		\item Save the output of the function into a variable called \textbf{var}.  Use a semi-colon (;) to prevent the output from being displayed on the screen.
     		\begin{lstlisting}[style=Matlab-editor]
     >> var = rand(10,4);
     		\end{lstlisting}	
     		\item Here we say we have executed or \emph{`called'} the function \textbf{rand} and provided or \emph{`passed'} the two parameters/variables `10'  and `4'.
-    		\item Double-click the variable \textbf{var} in the \textbf{Workspace} window to view the values in the \textbf{Variable Editor}.
-    		\item Extract the value in row 6 and column 3 and store this value into a variable called \textbf{m6n3}.  Verify, using the \textbf{Variable Editor}, that the correct value has been extracted.
+    		\item Double-click the variable \textbf{var} in the \textbf{Workspace} window to view the values in the \textbf{Variables} window.
+    		\item Extract the value in row 6 and column 3 and store this value into a variable called \textbf{m6n3}.  Verify, using the \textbf{Variables} window, that the correct value has been extracted.
     		\begin{lstlisting}[style=Matlab-editor]
     >> m6n3 = var(6,3);
     		\end{lstlisting}
-    		\item Extract all the rows from column 3 and store these values into a variable called \textbf{n3}.  Verify, using the \textbf{Variable Editor}, that the correct values have been extracted.
+    		\item Extract all the rows from column 3 and store these values into a variable called \textbf{n3}.  Verify, using the \textbf{Variables} window, that the correct values have been extracted.
     		\begin{lstlisting}[style=Matlab-editor]
     >> n3 = var(:,3);
     		\end{lstlisting}	
-    		\item Change the element in row 5 of column 2 to the value 999.  Verify, using the \textbf{Variable Editor}, that the correct value has been changed.
+    		\item Change the element in row 5 of column 2 to the value 999.  Verify, using the \textbf{Variables} window, that the correct value has been changed.
     		\begin{lstlisting}[style=Matlab-editor]
     >> var(5,2) = 999;
     		\end{lstlisting}	
-    		\item When you have finished, clear the workspace using the \textbf{clear} command.
+    		\item When you have finished, clear the workspace using the "clear" command.
     		\begin{lstlisting}[style=Matlab-editor]
     >> clear
     

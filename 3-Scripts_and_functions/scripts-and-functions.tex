@@ -8,6 +8,7 @@
 \date{Week 3}
 
 \definecolor{OliveGreen}{RGB}{34 139 34}
+\lstset{escapeinside={<@}{@>}}
 
 \begin{document}
 
@@ -25,21 +26,41 @@ An example script file has already been created and can be found in\\
 Browse to this folder and then load the script file called `emgscript.m' into the \textbf{Editor}. %\footnote{It's common in Windows for the \textbf{.mat} extension to, by default, be associated with the Microsoft Access Table program, so if you try to open a \textbf{.mat} file from Windows Explorer you might launch a different program. If that happens, open the file from within MATLAB}. 
 The commands that make up this script should look familiar from the previous chapter.  
 We can use this file to run all of these commands at once.  
-Make sure `3-Scripts\_and\_functions' is your \textbf{Current Folder} (more on this later); from within the \textbf{Editor} window click the \textbf{Run} icon from the toolbar.
+Make sure \textbf{3-Scripts\_and\_functions} is your \textbf{Current Folder} (more on this later); from within the \textbf{Editor} window click the \textbf{Run} icon from the toolbar.
 If a dialog box opens, click \textbf{Add to Path} rather than \textbf{Change Folder}.  
-You should see a figure appear containing the plot we produced in the previous chapter.  
+You should see a figure appear containing the plot we produced in the previous chapter.
+
+
+Because we have seen the commands before, the script should make sense to us.  
+However, someone who saw the script and those commands for the first time may find the code a bit confusing.  
+MATLAB allows us to add text to these files that will not perform any actions.  
+Putting the \textcolor{OliveGreen}{\%} character at the beginning of a line instructs MATLAB to ignore any following text it finds on the same line.  
+This enables us to add a description/comment above a single or group of commands to remind us what is going on.  
+Have a look at the file called `emgscriptwithdescription.m' to see how comments can make a file easier to understand.
+
+Note that if you try running the script while your \textbf{Current Folder} is \textbf{..\textbackslash code}, you get an error saying something like:
+
+\begin{lstlisting}[style=Matlab-editor]
+<@\textcolor{red}{Error using load}@>
+'data/emg_data.mat' is not found in the current folder or on the MATLAB path, but exists in:
+<your path>/course-material/3-Scripts_and_functions
+
+Change the MATLAB current folder or add its folder to the MATLAB path.
+
+Error in emgscript (line 1)
+load('data/emg_data.mat')
+\end{lstlisting}
+
+MATLAB does not search your entire computer for the file `emg\_data.mat' to load (this could take a long time and there may be multiple files with the same name); it searches the current folder and any folders on its \textbf{Search Path}.
+We want to avoid adding folders to the search path if possible because your script would become difficult to run on a different computer.
+Instead, we try to keep our \textbf{Current Folder} constant for a project and call other files relative to the current folder (the current folder should be this week's folder i.e. 3-Scripts\_and\_functions).
+On line 1 of `emgscript.m' you can see that the script uses the load command to load the file "'data/emg_data.mat'", this tells MATLAB that the subfolder `data/', which is in \textbf{3-Scripts\_and\_functions} \emph{not} \textbf{3-Scripts\_and\_functions/code}, contains the .mat file we are trying to load.
 %The script can also be run by typing the name of the script in the \textbf{Command Window} (without the \textbf{.m} bit) and pressing enter.  
 %For example:
 %\begin{lstlisting}[style=Matlab-editor]
 %>> emgscript
 %\end{lstlisting}
 
-Because we have seen the commands before the script should make sense to us.  
-However, someone who saw the script and those commands for the first time may find the code a bit confusing.  
-MATLAB allows us to add text to these files that will not perform any actions.  
-Putting the \textcolor{OliveGreen}{\%} character at the beginning of a line instructs MATLAB to ignore any following text it finds on the same line.  
-This enables us to add a description/comment above a single or group of commands to remind us what is going on.  
-Have a look at the file called `emgscriptwithdescription.m' to see how comments can make a file easier to understand.
 
 \subsection{Creating your own MATLAB script file}
 \label{sec:script}
@@ -106,9 +127,9 @@ title('The EMG amplitude of signal 3');
 \end{figure}
 
 \section{Functions}
-We have already had some experience in using MATLAB's in-built functions.  
+We have already had some experience using MATLAB's in-built functions.  
 Let us now take a closer look at how these functions work.  
-However, in order to get a good look at how these functions work we will have to look at a function that is not an in-built one.  
+However, in order to get a good look at how they work we will have to look at a function that is not an in-built one.  
 This is because all of the code in MATLAB functions is hidden.  
 Take a look at the file `my\_abs.m' in the `code' subfolder, which contains the function \textbf{my\_abs}.  
 The aim of this function is to perform exactly the same operation as MATLAB's \textbf{abs} function that we have used previously.
@@ -195,7 +216,7 @@ rectified_emg = abs(baseline_corrected_emg);
 		\end{lstlisting}
 		\item Rectify the same raw data
 		\begin{lstlisting}[style=Matlab-editor]
->> testdata = rectify(CSVData(:,2));
+>> testdata = rectify(datacsv(:,2));
 		\end{lstlisting}	
 		\item Plot the new rectified data
 		\begin{lstlisting}[style=Matlab-editor]

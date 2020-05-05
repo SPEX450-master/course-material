@@ -1,0 +1,431 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{spex450_documents}
+
+\title{Understanding MATLAB statements}
+
+\author{Peter Lamb}
+
+\date{Week 4}
+
+\definecolor{OliveGreen}{RGB}{34 139 34}
+\lstset{escapeinside={<@}{@>}}
+
+\begin{document}
+
+\maketitle
+
+As we have previously hinted, the real power of MATLAB is in automating the repetitive tasks that are often involved in data analysis.  
+Using MATLAB for this process has four main benefits:
+\begin{enumerate}
+	\item Reduces the overall time to perform the analysis.
+	\item Eliminates human errors by guaranteeing accuracy during repetition.
+	\item Once an analysis script/function is complete it enables the whole analysis process to be repeated rapidly from the original raw data.  This allows any additional data to be included into the analysis.
+	\item Detailed documentation is produced in the form of the MATLAB code.
+\end{enumerate}
+
+MATLAB has a few coding tools or \textbf{statements} that can allow us to build loops to repeat a process many times.  We will cover the most common and useful ones in this section.
+
+Don the Star Wars t-shirt, we are entering the world of computer programming!
+
+\section{The if\dots{} elseif\dots{} else\dots{} Statements}
+This is the world's most common computer programming statement.  
+It remains pretty much consistent across all of the major programming languages.  It follows from the logical statements that we encounter in our human world every day.  
+If the answer to a question is `yes', do this, if the answer is `no', do something else.  
+For example, you are at a pedestrian crossing (and going to follow the rules to the letter!).  
+If the crossing light is green, cross... else, don't cross.  
+Simple.  
+Writing this in language that MATLAB understands would look like this:
+
+\begin{lstlisting}[style=Matlab-editor]
+% crossing_light has the value 1 when the crossing 
+% light is green and the value 0 otherwise
+if  crossing_light == 1
+    cross_the_road; % hypothetical script of commands
+else
+    dont_cross_the_road;
+end
+\end{lstlisting}
+
+There are a few things to notice here.  The commands that set out the statement are "if", "else" and "end".  
+The "end" command is there to inform MATLAB that any commands after the statement are not exclusive to the "else" condition, i.e.~the "if"$\ldots$ "else" statement has finished.  
+The "if" command is followed by the `question' which should only return a true or false value.  
+When using the `Equals' expression you must use double $=$ signs, e.g. $==$.  
+A list of common expressions and an example for each is given below:
+
+\begin{quotation}
+\begin{tabular}{l l l}
+\toprule
+Expression & MATLAB code & Example \\
+\midrule
+Equals & $==$ & "if" a $==$ 5\\
+Less than & $<$ & "if" a $<$ 5\\
+Greater than & $>$ & "if" a $>$ 2\\
+Less than or equal & $<=$ & "if" a $<=$ 5\\
+Greater than or equal & $>=$ & "if" a $>=$ 5.2\\
+Does not equal & $\sim =$ & "if" a $\sim =$ 5\\
+\bottomrule
+\end{tabular}
+\end{quotation}
+
+Sometimes the question cannot be broken down as simply as the first example.  
+Imagine this time that you are driving a car and are approaching a set of traffic lights.  
+You could break the situation down in the following way.  
+If the light is green, you drive on.  
+Else, if the light is red, you stop.  
+Else, if you are already very close to the lights, you drive on, else, you stop.  This introduces another "if" expression to evaluate, the `If the light is red' question.  In MATLAB code it would look something like this:
+\begin{lstlisting}[style=Matlab-editor]
+% traffic_light has the value 1 when the traffic light 
+% is green, the value 2 if the traffic light is amber 
+% and the value 3 if the light is red, proximity is 
+% the distance to the lights in metres.
+if  traffic_light == 1 % the traffic light is green
+    drive_on;
+elseif traffic_light == 3 % the traffic light is red
+    stop;
+else % the traffic light must be amber
+    if proximity < 10 % close enough to drive through
+        drive_on;
+    else % it is not safe to drive through
+        stop;
+    end
+end
+\end{lstlisting}
+
+Combining the lessons on functions in the last section and what we have just learned about "if"$\dots$ "else" statements, we will write a function to advise someone how to deal with traffic lights.
+
+\subsubsection*{Exercise}
+\begin{enumerate}
+	\item Begin by creating a new Function M-File called `driving.m'.
+	\begin{itemize}
+		\item From the \textbf{Home} tab on MATLAB ribbon select \textbf{New} and then from the drop down list select \textbf{Function}.
+		\item Change the name of the function to \textbf{driving}		
+	\end{itemize}
+	\item Declare the input and output variables.
+	\begin{itemize}
+		\item Set the input variables, using a comma `,' to separate the two.  Use "traffic_light" as the colour of the traffic light and "proximity" as the distance to the lights.
+		\item Declare an output variable, "advice" to contain a text value of what should be done, either `Drive on...' or `Stop!'.			
+	\end{itemize}
+	\item Write the "if"$\dots$ "else" statements, setting the output variable to the required value where necessary.
+	\item Add some comments to the file to make it clear what is going on.
+	\item Save the file and then test the results.	
+	\begin{lstlisting}[style=Matlab-editor]
+>> advice = driving(1,5)
+
+advice =
+
+    Drive on...
+	\end{lstlisting}
+
+\end{enumerate}
+
+Your finished function may look slightly different but should look something like this:
+
+\begin{lstlisting}[style=Matlab-editor]
+function advice = driving(traffic_light, proximity)
+%DRIVING Advice on what to do when approaching traffic 
+% lights
+%    The response is based on two input parameters:
+%    1)  The state of the traffic lights.
+%        Green = 1, Amber = 2 and Red = 3.
+%    2)  The proximity of the lights in metres.
+%
+%    The output text is one of the following:
+%        'Drive on...' or 'Stop!'
+%
+
+if traffic_light == 1 % the traffic light is green
+    advice = 'Drive on...' ;
+elseif traffic_light == 3 % the traffic light is red
+    advice = 'Stop!';
+else % the traffic light must be amber
+    if proximity < 10 % close enough to drive through
+        advice = 'Drive on...';
+    else % it is not safe to drive through
+        advice = 'Stop!';
+    end
+end
+\end{lstlisting}
+
+\section{The For... Loop Statement}
+This statement is probably the most effective statement in saving time during data analysis.  
+It is designed to repeat a set of commands a number of times.  
+Let us revisit the example that finished Chapter 2.  
+In that example we had created a graph to show the amplitude of one of the signals from our EMG data file.  
+We had noticed that to repeat the process and show the plots for the remaining five signals would be repetitive and time consuming.  
+The "for" loop will allow us to reuse the same lines of code without having to type them out a number of times.
+
+To recap what we were doing, take a look at the code below.  
+This function makes use of the \textbf{rectify} function that we developed last week.
+
+\begin{lstlisting}[style=Matlab-editor]
+function plot_emg(filename)
+%PLOT_EMG Building on the EMG analysis from Week 2
+
+% Load in the data from the specified text file
+emgdata = csvread(filename);
+
+% Convert the time column from frames to seconds
+emgdata(:,1) = emgdata(:,1)/200;
+
+% Baseline correct and Rectify the EMG data and convert 
+% the values from volts to millivolts
+emgdata(:,2) = rectify(emgdata(:,2))*1000;
+
+% Plot the graph of the signal with a title and axis 
+% labels
+plot(emgdata(:,1), emgdata(:,2));
+
+title(sprintf('The EMG amplitude of signal %d', 1)); 
+
+xlabel('Time (s)');
+
+ylabel('EMG amplitude (mV)');
+
+% Save the current figure as a png file
+saveas(gcf, sprintf('signal %d.png', 1),'png');
+\end{lstlisting}
+
+Most of this code should be familiar.  
+However, we should take a closer look at the lines that use the \textbf{sprintf} and \textbf{saveas} functions.  
+Once a figure has been created we can use the \textbf{saveas} function to save the plot as an image file.  
+This image can then be used in reports or presentations.  
+In order to use the function we must provide three variables; 1) the current figure, here we use the \textbf{gcf} function to `\textbf{G}et \textbf{C}urrent \textbf{F}igure', 2) a name to call the output file and 3) some information as to the type of file we are wanting to create, in this case we use `jpg' to indicate a \textbf{jpeg} image.  
+The \textbf{sprintf} function allows us to create a text output by using \textbf{place-holders} and variables.  
+The \%d characters are used to specify the place-holder and also what type of variable is required.  
+In this case we use \%d to specify a whole number (see the documentation for \textbf{sprintf}, specifically the section about `formatSpec').  
+We can then pass the variables that will appear as the place-holders.  
+This allows the majority of the text to be repeated but still allows certain values to change.  
+The usefulness of this function will become apparent shortly.
+
+Before we begin, consult the MATLAB documentation to get an explanation and some examples of how the "for" statement is used.  
+The aim of this section is to plot and save the image for each of the six EMG signals.
+
+\subsubsection*{Exercise}
+\begin{enumerate}
+	\item Modify the file `plot\_emg.m' using the "for" loop to save the figures from all of the six EMG signals.
+	\begin{itemize}
+		\item Enclose the last three sections of the function in a "for"$\dots$ "end" loop.
+		\item Set the looping variable as \textbf{column} and increment the value from 2 to 7.
+		\item Create a new variable, \textbf{signal}, to store the signal number as \textbf{column}-1.
+		\item Substitute references to the signal number 1 with the variable \textbf{signal} so it increments as we loop through the function.
+		\item Substitute references to column 2 with the variable \textbf{column} so it too increments as we loop through the function.
+	\end{itemize}
+	\item Change the function name to `plot\_emgs' and save to a new file with the same name.
+	\item Use the \textbf{csv} file to test the function.
+	\begin{lstlisting}[style=Matlab-editor]
+>> plot_emgs('data/data_csv.csv');
+
+	\end{lstlisting}	
+\end{enumerate}
+
+These relatively slight modifications allow us to repeat these data analysis and plotting steps over and over again.  
+In this example we have only repeated the steps six times but we could repeat this any number of times.  
+The finished function should look something like this:
+
+\begin{lstlisting}[style=Matlab-editor]
+function plot_emgs(filename)
+%PLOT_EMGS Building on the EMG analysis from Week 2
+
+% Load in the data from the specified text file 
+emgdata = csvread(filename);
+
+% Convert the time column from frames to seconds
+emgdata(:,1) = emgdata(:,1)/200;
+
+for column = 2 : 7
+    % Set the signal number as column - 1
+    signal = column-1;
+
+    % Baseline correct and Rectify the EMG data and 
+    % convert the values from Volts to milli Volts
+    emgdata(:,column) = rectify(emgdata(:,column))*1000;
+
+    % Plot the graph of the signal with a title 
+    % and axis labels	
+    plot(emgdata(:,1), emgdata(:,column));
+    
+    title(sprintf('EMG amplitude of signal %d',signal))
+    
+    xlabel('Time (s)');
+    
+    ylabel('EMG amplitude (mV)');
+
+    % Save the current figure as a png file
+    saveas(gcf, sprintf('signal %d.png',signal),'png')
+
+end
+		
+\end{lstlisting}
+
+%\section{The While... Loop Statement}
+%This statement is, in many ways, very similar to the "for" loop.  
+%This simply sets up a repeating loop that carries on until a certain expression is true.  
+%The expression is set up in the same way as with the "if"$\dots$ "else" statements.  
+%The example below shows a very basic "while" loop, making use of MATLAB's \textbf{disp} function to display a message in the command window during each loop.
+%\begin{lstlisting}[style=Matlab-editor]
+%function count_to_20()
+%%COUNT_TO_20 A very simple counter
+%% Create a counter variable and set the value to 1
+%counter = 1;
+%
+%% Set up the while loop
+%while counter <= 20
+%
+%    % Display the current counter value
+%    disp(sprintf('Counter is at %d', counter));
+%
+%    % Increment the current counter value
+%    counter = counter + 1;
+%
+%end	
+%\end{lstlisting}
+%
+%A "while" statement can be very useful when writing a script or function to read in data from a text file that may be stored in a unrecognised format.  
+%The help documentation in MATLAB has a number of examples on how to use the statement.
+
+\section{The Switch Statement}
+The "switch" statement is another way of offering a number of different code branches depending on the state of a variable.  
+Using the "switch" statement informs MATLAB to inspect the variable and offers separate code chunks in various different \textbf{cases}. 
+Using the EMG example we have been following through, imagine that the signals 1-6 are labelled as described in the following table.
+
+\begin{quotation}
+\begin{tabular}{l l l}
+\toprule
+Signal number & Muscle & Shorthand \\
+\midrule
+1 & Gluteus medius & GMED\\
+2 & Gluteus maximus & GMAX\\
+3 & Rectus femoris & RF\\
+4 & Adductor magnus  & AM\\
+5 & Sartorius & ST\\
+6 & Biceps femoris & BF\\
+\bottomrule
+\end{tabular}
+\end{quotation}
+
+It would be better if we could label any graphs that use these signals so that they use the name of the muscle, say `Gluteus medius' or `GMED' as opposed to just `Signal 1'.  
+The "switch" statement would allow us to do this easily.
+
+\subsubsection*{Exercise}
+\begin{enumerate}
+	\item Create a copy of the file `plot\_emgs.m' and call it `plot\_muscles.m'.
+	\begin{itemize}
+		\item Remember to modify the function name at the top of the file to match the file name.
+	\end{itemize}
+	\item Modify this function using the "switch" statement to add the correct name to the title of the six EMG signal graphs.
+	\begin{itemize}
+		\item Create a switch statement using the variable \textbf{signal} within the "for" loop and just after the \textbf{signal} has been declared.
+		\item Use six cases for each of the possible \textbf{signal} values 1 to 6.
+		\item Use a variable called \textbf{muscle} to store the text for each muscle depending on which "case" is followed.
+	\end{itemize}
+	\item Replace the reference to \textbf{signal} in the remainder of the "for" loop with the muscle name
+	\item The `\%d' place-holder (used for whole numbers) will need to be replaced with the `\%s' place-holder (used for text strings).
+	\item Test the function to see how it works.
+	\begin{lstlisting}[style=Matlab-editor]
+>> plot_muscles('data/data_csv.csv');
+	\end{lstlisting}	
+\end{enumerate}
+
+The finished function should look something like this:
+
+\begin{lstlisting}[style=Matlab-editor]
+function plot_muscles(filename)
+%PLOT_MUSCLES Building on the EMG analysis from Week 2
+
+% Load in the data from the specified text file
+emgdata = csvread(filename);
+
+% Convert the time column from frames to seconds
+emgdata(:,1) = emgdata(:,1)/200;
+
+for column = 2 : 7
+    % Set the signal number as column - 1
+    signal = column - 1;
+		
+    % A switch statement to get the muscle name
+    switch signal
+        case 1
+            muscle = 'GMED';
+        case 2
+            muscle = 'GMAX';
+        case 3
+            muscle = 'RF';
+        case 4
+            muscle = 'AM';
+        case 5
+            muscle = 'ST';
+        case  6
+            muscle = 'BF';
+        otherwise
+            muscle = 'UNKNOWN';
+    end
+ 
+    % Baseline correct and Rectify the EMG data and 
+    % convert the values from volts to millivolts
+    emgdata(:,column) = rectify(emgdata(:,column))*1000;
+
+    % Plot the graph of the signal with a title and 
+    % axis labels
+    plot(emgdata(:,1), emgdata(:,column));
+    
+    title(sprintf('The EMG amplitude of signal %s', muscle));
+    
+    xlabel('Time (s)');
+    
+    ylabel('EMG amplitude (mV)');
+
+    % Save the current figure as a png file
+    saveas(gcf, sprintf('muscle %s.png',muscle),'png')
+
+end		
+	\end{lstlisting}
+
+%\section{The Try... Catch Statement}
+%Unless you are a code wizard you have probably encountered a few errors when writing and running some of the functions.  
+%Most of the time these errors are probably your own fault for mistyping something.  
+%However, it is not always the case!  
+%A common source of errors is when writing information to existing files.  
+%If the file is currently open by another program then you might get a file access error that causes a process to crash.  
+%So far this has not been too much of a problem as we have only run simple processes.  
+%In some cases an analysis process can be expected to take many hours and a crash part way through could be very time consuming.
+%
+%MATLAB has a set of statements that allow you to plan for these errors and to catch them if they do occur.  
+%In this next exercise we will demonstrate the "try"$\dots$ "catch" statement by writing to a simple Excel file\footnote{If you're trying to do this on a Mac, you're out of luck. Try it out on a Windows computer, there are some workarounds for Macs, but this is still quite a limitation of using MATLAB on Mac.}.
+%
+%\subsubsection*{Exercise}
+%\begin{enumerate}
+%	\item Create a simple script file that creates a matrix of random numbers (1000 rows x 10 columns).
+%	\begin{lstlisting}[style=Matlab-editor]
+%data = rand(1000, 10);
+% 	\end{lstlisting}	
+%	\item Add a line to save the data to an Excel file.
+%	\begin{lstlisting}[style=Matlab-editor]
+%xlswrite('Error Test',data);
+% 	\end{lstlisting}	
+%	\item Run the script to create the file and then open it in Excel to view the data.
+%	\item With the file still open in Excel try re-running the script to generate a `File cannot be read-only' error.
+%	\item Use the "try"$\ldots$ "catch" statement to wrap the write command and catch the error in a variable called \textbf{exception}.  Display a simple message in the command window.
+%	\begin{lstlisting}[style=Matlab-editor]
+%try
+%    xlswrite('Error Test',data);
+%catch exception
+%    disp('The file is currently read-only.  Close the file and try again.');
+%end
+%	\end{lstlisting}	
+%	\item With the file still open in Excel try re-running the script.  You should get no error and see the following information displayed in the command window.
+%	\begin{lstlisting}[style=Matlab-editor]
+%The file is currently read-only.  Close the file and try again.
+%	\end{lstlisting}
+%	\item Make the script more useful by adding a prompt to close the file and then continue by pressing any key on the keyboard.  We can use the MATLAB function called "pause" to achieve this.	
+%	\begin{lstlisting}[style=Matlab-editor]
+%try
+%    xlswrite('Error Test',data);
+%catch exception
+%    disp('Close Error Test.xls then press any key to continue.');
+%    pause;
+%    xlswrite('Error Test',data);	
+%end
+%	\end{lstlisting}	
+%\end{enumerate}
+
+\end{document}

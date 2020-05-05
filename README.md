@@ -1,2 +1,3 @@
-# README
+# SPEX450
+## Data processing and analysis
 Welcome to the data processing and analysis module for SPEX450. The course material for this module will be stored on these **GitHub** pages in the file structure you can see above i.e. Week 1 content is in 1-Intro\_to\_data\_analysis. There is a pdf file that can be viewed in your browser or downloaded onto your computer. I will record lectures with demonstrations and upload them to Blackboard. We will also have weekly Zoom meetings.

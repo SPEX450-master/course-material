@@ -5,3 +5,6 @@
 *.run.xml
 *.synctex.gz
 *.m~
+*.snm
+*.bcf
+*.nav

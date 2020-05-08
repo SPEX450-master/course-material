@@ -58,26 +58,7 @@ ans =
    6.8121   4.3462
 \end{lstlisting}
 
-\subsection{Correlation coefficient}
-Calculate the correlation coefficient for the two data columns.
-\begin{lstlisting}[style=Matlab-editor]
->> corrcoef(M(:,1), M(:,2))
 
-ans =
-   
-   1.0000   0.7024
-   0.7024   1.0000
-\end{lstlisting}
-
-Here, you can see four coefficients, which might seem strange. 
-The coefficient in position (1,1) \emph{(row 1, column 1)} is the correlation coefficient for "M(:,1)" with "M(:,1)". Since they are identical, there is a perfect correlation. The coefficient in (2,1) is for "M(:,2)" and "M(:,1)", (1,2) is for "M(:,1)" and "M(:,2)", and (2,2) is for "M(:,2)" and "M(:,2)".
-Long story short, you are interested in the non-trivial values in (2,1) and (1,2), your correlation coefficient is 0.7024.
-
-Note that you can specify more output arguments to get the correlation coefficients ("R"), $p$-value ("p"), and the lower ("RL") and upper ("RU") bounds for a 95\% confidence interval for the coefficient.
-We'll come back to this later when reporting our statistics in a paper or thesis.
-\begin{lstlisting}[style=Matlab-editor]
->> [R, p, RL, RU] = corrcoef(M(:,1), M(:,2));
-\end{lstlisting}
 \subsection{Standard deviation}
 Calculate the standard deviation of the values in the two columns.
 \begin{lstlisting}[style=Matlab-editor]
@@ -120,6 +101,36 @@ ans =
    3.4970
 \end{lstlisting}
 
+\subsection{Correlation coefficient}
+Calculate the correlation coefficient for the two data columns.
+\begin{lstlisting}[style=Matlab-editor]
+>> corrcoef(M(:,1), M(:,2))
+
+ans =
+   
+   1.0000   0.7024
+   0.7024   1.0000
+\end{lstlisting}
+
+Here, you can see four coefficients, which might seem strange. 
+The coefficient in position (1,1) \emph{(row 1, column 1)} is the correlation coefficient for "M(:,1)" with "M(:,1)". Since they are identical, there is a perfect correlation. The coefficient in (2,1) is for "M(:,2)" and "M(:,1)", (1,2) is for "M(:,1)" and "M(:,2)", and (2,2) is for "M(:,2)" and "M(:,2)".
+Long story short, you are interested in the non-trivial values in (2,1) and (1,2), your correlation coefficient is 0.7024.
+
+Note that you can specify more output arguments to get the correlation coefficients ("R"), $p$-value ("p"), and the lower ("RL") and upper ("RU") bounds for a 95\% confidence interval for the correlation coefficient.
+We'll come back to this later when reporting our statistics in a paper or thesis.
+\begin{lstlisting}[style=Matlab-editor]
+>> [R, p, RL, RU] = corrcoef(M(:,1), M(:,2));
+\end{lstlisting}
+% to get confidence interval, perform Fisher transformation (r to Fisher z value), R of 0.7024 is 0.872.
+% Z for 95% confidence interval is 1.96
+% SE = 1 / sqrt(length(M) - 3) = 0.0711
+% lower_z = 0.872 - (1.96)*SE
+% upper_z = 0.872 + (1.96)*SE
+% Convert back to R distribution
+% lower_r = 0.625
+% upper_r = 0.767
+% These bounds are upper and lower bounds of correlation coefficients that you can be 95% confident contain the true correlation coefficient.
+
 \section{Linear Models}
 Load the data in the file \textbf{`age\_and\_hr.mat'}.  
 The variable called \textbf{D} contains two columns of participant information.  
@@ -130,18 +141,18 @@ Plot the two columns of data against each other, with age along the $x$-axis and
 Use green dots to mark the coordinates and add axis labels.
 \begin{lstlisting}[style=Matlab-editor]
 >> plot(D(:,1), D(:,2),'g*');
->> xlabel('Age in years');
->> ylabel('Max recorded HR in beats/min');
+>> xlabel('Age (years)');
+>> ylabel('Max recorded HR (beats/min)');
 \end{lstlisting}
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=\textwidth]{age_hr_scatter.png}
+		\includegraphics[width=0.8\textwidth]{age_hr_scatter_v2.png}
 		\caption{A scatter plot of max HR against age}
 		\label{fig:agehr_scatter}
 	\end{center}
 \end{figure}
 Consult the help documentation for the \textbf{regress} function for information on how to use the function.  
-We will make use of a constant term so need to add a column of ones to our age data (X).
+We will make use of a constant term so need to add a column of ones to our age data (X) (see the note at the bottom of the description section in the documentation).
 We can use the \textbf{ones} function to create a column, with as many rows as the matrix: \textbf{D}.
 
 Create the X values from the ages and then use the \textbf{regress} function to create the regression model and extract the statistical data.
@@ -164,7 +175,7 @@ For example, imagine you wanted to add the data for one more participant, making
 Had you \emph{hard-coded} the \textbf{100} and \textbf{1} as input, you would have to change every line of code that relied on there being 100 rows, using \textbf{size} requires no changes: it would now output 101 and 1.
 Back to the module...
 
-The variable \textbf{m} has two elements.  Since this is a linear regression these values correspond to the constants, $m_{0}$ and $m_{1}$, in the standard equation of a line:
+The variable \textbf{m} has two elements.  Since this is a linear regression these values correspond to the constants, $m_{0}$ (y-intercept) and $m_{1}$ (slope), in the standard equation of a line:
 \begin{equation*}
 Y = m_{0} + m_{1}X
 \end{equation*}
@@ -178,19 +189,21 @@ m_{1} = -0.9997
 \end{equation*}
 It is clear that our result is very close to the estimation that:
 \begin{equation*}
-Y = 220 - X
+Y = 220 +(-0.9997)X,
 \end{equation*}
-The \textbf{stats} variable has the $R$-square and $F$ statistic, the $p$-value for the full model, and an estimate of the error variance.  
-Add the regression line to the plot for ages 0 to 70 years and then add the model and the $R$-square value as a text label.
+where $Y$ is the max HR and $X$ is age.
+
+The \textbf{stats} variable has the $R^2$ and $F$ statistic, the $p$-value for the full model, and an estimate of the error variance.  
+Add the regression line to the plot for ages 0 to 70 years and then add the model and the $R^2$ value as a text label.
 \begin{lstlisting}[style=Matlab-editor]
 % 'hold' axes to add plots without creating new figure
 >> hold on 
->> plot((0:70), (b(1) + b(2)*(0:70)));
->> text(20, 210, 'y = 219.744 - 0.9997x (R^ 2 = 0.9596)');
+>> plot((0:70), (m(1) + m(2)*(0:70)));
+>> text(20, 210, 'y = 219.744 - 0.9997x (R^2 = 0.96)');
 \end{lstlisting}
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=\textwidth]{age_hr_regress.png}
+		\includegraphics[width=0.8\textwidth]{age_hr_regress_v2.png}
 		\caption{A linear regression of HR against Age}
 		\label{fig:agehr_regress}
 	\end{center}
@@ -206,12 +219,12 @@ The results are from a fictitious long-term fitness intervention study.
 
 \subsection{One-sample and paired-sample \emph{t}-test}
 MATLAB's \textbf{ttest} function can be used to perform a one-sample or paired-sample \emph{t}-test.  
-We will begin by calculating the change in weight throughout the study.  
+We will begin by calculating the change in weight throughout the study (pre weight is in column 3 and post weight in column 4).  
 This will give us a change score (one sample) for each participant.  
 We can take the mean value of this result to see the average amount and direction of weight change.
 \begin{lstlisting}[style=Matlab-editor]
->> tdata = csvread('data/ttest.csv', 1)
->> chgWeight = tdata(:,4)-tdata(:,3);
+>> tD = csvread('data/ttest.csv', 1)
+>> chgWeight = tD(:,4) - tD(:,3);
 >> mean(chgWeight)
 
 ans =
@@ -222,12 +235,13 @@ We can now use these change scores to perform a \emph{t}-test of the null hypoth
 We will return to the hypothesis outcome, \textbf{h} (where $h = 1$ indicates a rejection of the null hypothesis and $h = 0$ indicates a failure to reject the null hypothesis) and the $p$-value of the test.  
 We will use the default values of mean, \textbf{m}, as 0 (no weight change), an alpha value of 0.05 and a two-tailed test.
 \begin{lstlisting}[style=Matlab-editor]
->> [h, p] = ttest(chgWeight,0);
+>> m = 0;
+>> [h, p] = ttest(chgWeight, m);
 \end{lstlisting}
-The result shows that the null-hypothesis was rejected, $h = 1$, since the $p$ value ($p$ = 0.0377) is less than the 0.05 threshold.  
+The result shows that the null-hypothesis was rejected, $h = 1$, since the $p$ value ($p$ = 0.0377) is less than the 0.05 threshold\footnote{add the outputs \texttt{ci} and \texttt{stats}, as in \texttt{[h,p,ci,stats] = ttest(chgWeight,m);} to output degrees of freedom, t-statistic and 95\% confidence interval for reporting.}.  
 Confirm that reducing the significance level to an alpha value of 0.01, 1\%, would result in a failure to reject the null hypothesis.
 \begin{lstlisting}[style=Matlab-editor]
->> h = ttest(chgWeight, 0, 0.01)
+>> h = ttest(chgWeight, m, 0.01)
 
 h = 
 
@@ -238,22 +252,22 @@ It then follows that the null hypothesis would be that the mean was 0.
 We could have taken the raw values and used a paired-sample \emph{t}-test to perform a similar statistical analysis.  
 Verify that the result would, as expected, produce an identical outcome:
 \begin{lstlisting}[style=Matlab-editor]
->> [h, p] = ttest(tdata(:,4), tdata(:,3));
+>> [h, p] = ttest(tD(:,4), tD(:,3));
 \end{lstlisting}
 We will now use the gender information, in column 2, to investigate the effect the intervention had on pre/post BMI scores within each sex.  
-Extract the indices of males and females and perform a paired-sample \emph{t}-test on each group.
+Extract the indices of males and females and perform a paired-sample \emph{t}-test on each group (in column 2, 1 indicates male and 2 indicates female).
 \begin{lstlisting}[style=Matlab-editor]
->> males = tdata(:,2) == 1;
->> females = tdata(:,2) == 2;	
->> [hF, pF] = ttest(tdata(females,5), tdata(females,6));
->> [hM, pM] = ttest(tdata(males,5), tdata(males,6));
+>> males = tD(:,2) == 1;
+>> females = tD(:,2) == 2;	
+>> [hF, pF] = ttest(tD(females,6), tD(females,5));
+>> [hM, pM] = ttest(tD(males,6), tD(males,5));
 \end{lstlisting}
 Verify that effect is significant in one gender group but not in the other.  
 
 \subsection{Two-sample \emph{t}-test}
 We will now perform an unpaired two-sample, or \emph{`independent samples'} \emph{t}-test on the same body weight data as before.
 \begin{lstlisting}[style=Matlab-editor]		
->> [h2, p2] = ttest2(tdata(:,4),tdata(:,3));
+>> [h2, p2] = ttest2(tD(:,4),tD(:,3));
 \end{lstlisting}
 Compare this result to the paired-sample results from before (\textbf{h} and \textbf{p}), notice the difference.  
 In this second case we are using the same set of data, but we are not treating the observations (rows) as paired, just as two separate samples.  
@@ -263,71 +277,81 @@ This highlights the importance of choosing the correct statistical model as you 
 \section{Analysis of Variance}
 \subsection{One-way analysis of variance}
 Using the same data set as before we will look at running an analysis of variance, or ANOVA, on the weight change scores by gender.  
-First we need to create a grouping variable.  
-We could simply use the gender column in the data matrix but this would not give much information on the resulting output.  
-Instead we will create a variable that has the strings "'Male'" or "'Female'" relating to each value in the gender column, where 1 = `Male' and 2 = `Female'.  
-Once this variable has been created we will use MATLAB's \textbf{anova1} function to perform a one-way analysis of variance.
-\begin{lstlisting}[style=Matlab-editor]
->> gender = cell(size(tdata(:,2))); % cell array
->> gender(tdata(:,2) == 1) = {'Male'};		
->> gender(tdata(:,2) == 2) = {'Female'};		
->> [p... stats] = anova1(chgWeight, gender)
-
-p =
-   
-   0.0098
-   
->> [] multcompare(stats);
-   
->> [gnames(c(:,1)), gnames(c(:,2)), num2cell(c(:,3:6))]
-
-ans =
-
-   1x6 cell array
-	
-   {'Male'}    {'Female'}    {[-19.8815]}    {[-11.4254]}    {[-2.9693]}    {[0.0098]}
-	
+Next we will use MATLAB's \textbf{anova1} function to perform a one-way analysis of variance.
+\begin{lstlisting}[style=Matlab-editor]		
+>> [pAOV,tbl,statsAOV] = anova1(chgWeight, tD(:,2));
 \end{lstlisting}
-% not actually necessary to make the cell, could do p = anova1(chgWeight, tdata(:,2)), but the factor levels wouldn't be labelled.
+% Removed this in 2020 because too many new concepts were being introduced.
+%>> gender = cell(size(tD(:,2))); % cell array
+%>> gender(tD(:,2) == 1) = {'Male'};		
+%>> gender(tD(:,2) == 2) = {'Female'};
+%>> [pAOV,tbl,statsAOV] = anova1(chgWeight, gender);
+% not actually necessary to make the cell, could do p = anova1(chgWeight, tD(:,2)), but the factor levels wouldn't be labelled.
 The following figures should be displayed to show the results of the analysis.
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=\textwidth]{anova_boxplot.png}
+		\includegraphics[width=\textwidth]{anova_boxplot_v2.png}
 		\caption{A box plot showing the change in weight for males and females}
 		\label{fig:anova_boxplot}
 	\end{center}
 \end{figure}
-\begin{figure}[H]
+\begin{table}[H]
 	\begin{center}
-		\includegraphics[width=\textwidth]{anova_table.png}
-		\caption{The table output from the ANOVA function}
-		\label{fig:anova_table}
+		\begin{tabular}{llllll}
+		\toprule
+		Source 	& SS 	& df & MS & F &	Prob>F\\
+		\midrule
+		Groups 	& 1028.0	 & 1 & 1028.0 & 7.6142 & 0.0098\\
+		Error 	& 4050.3 & 30 & 135.0 & 	& \\
+		Total 	& 5078.3 & 31 & 	& 	& \\
+		\bottomrule
+		\end{tabular}
+		\caption{The table output from the ANOVA function (see \texttt{tbl} variable in the Workspace)}
+		\label{tab:anova_table}
 	\end{center}
-\end{figure}
+\end{table}
 From the table and from the output variable, \textbf{p}, we can see that we should reject the null hypothesis that the two groups are drawn from a population with the same mean.  
 This result indicates that there is a significant difference ($p = 0.0098$) in the average weight change between men and women during the intervention.
-We could also say that, if the samples were drawn from the same population we would only expect differences of this magnitude about 1\% of the time in repeated experiments.
+In other words, if the samples were drawn from the same population we would only expect differences of this magnitude about 1\% of the time in repeated experiments.
 Additionally, the box plot clearly shows how these changes in men and women differ.
+
+The \textbf{multcompare} function can be used to do \emph{post hoc} tests following ANOVA.
+In this case we only have two groups, so it's obvious the the difference is between these two groups; however, we'll use the function to output the 95\% confidence interval.
+\begin{lstlisting}[style=Matlab-editor]	
+>> c = multcompare(statsAOV)
+
+c =
+
+    1.0000    2.0000  -19.8815  -11.4254   -2.9693    0.0098
+	
+\end{lstlisting}
+
+According to the documentation, the first two columns indicate the levels of the grouping variable (1 (males) was compared to 2 (females), if there was another level we would have two more rows, 1 vs 3 and 2 vs 3). 
+The third column is the lower bound of the 95\% confidence interval, the fourth is the difference in group means, the fifth is the upper bound of the 95\% confidence interval and the last column is the $p$-value for this comparison.
 
 In summary we can infer the following from the ANOVA and previous $t$-tests:
 
 \begin{itemize}
 	\item There was a significant loss in body weight in the overall sample group, $t(31) = -2.17$, $p = .038$, 95\% CI $[-9.53, -0.30]$.
 	\item However, the ANOVA indicated that there was a significant difference in the nature of the change between the two gender groups $F(1,30) = 7.61$, $p = .010 $, 95\% CI [-19.89, -2.97].
-	\item The \emph{t}-tests within the gender groups showed that there was a highly significant loss in body weight in the male participants $t(17) = 2.22$, $p = 0.040$, 95\% CI $[0.30, 11.44]$, and only a slight non-significant increase in body weight for females $t(13) = 0.72$, $p = .483$, 95\% CI $[-4.06, 8.13]$.
+	\item The \emph{t}-tests within the gender groups showed that there was a statistically significant loss in body weight in the male participants $t(17) = -2.22$, $p = 0.040$, 95\% CI $[-11.44, -0.30]$, and only a slight non-significant increase in body weight for females $t(13) = -0.72$, $p = .483$, 95\% CI $[-8.13, 4.06]$.
 \end{itemize}
 
-\subsection{Two-way analysis of variance}
-In this section we will introduce the two-way ANOVA for comparing the means across a combination of two factors.  
-We will do this by using one of MATLAB's examples found in the Help documentation.  
-Load the help documentation for using MATLAB's two-way ANOVA function, called \textbf{anova2}, i.e.~ ">> doc anova2".
-This documentation has a detailed explanation of all of the possible ways in which the function can be used.  
-Read this information and then follow the example shown.  
-This example will make use of one of the internal MATLAB dataset called \textbf{popcorn}.
+Take note in the above summary how statistics should be reported in APA format.
+In the first bullet the $t$ indicates the type of test, (31) indicates the degrees of freedom followed by the $t$ test statistic, the $p$-value is next (note the preference for giving the exact value rather than $p < .05$), followed by the 95\% confidence interval.
+Some prefer the effect size to be reported in place of the 95\% confidence interval, but we'll stay out of that debate for now.
 
-\subsubsection{Further statistical analysis}
-At this point, you may decide to export your data to a file format of your choice and conduct your statistical analysis using other software such as R or SPSS.
-MATLAB's statistical toolbox is intended mainly for engineering purposes and lacks some of the tests and conventions necessary for sports and health science.
+%\subsection{Two-way analysis of variance}
+%In this section we will introduce the two-way ANOVA for comparing the means across a combination of two factors.  
+%We will do this by using one of MATLAB's examples found in the Help documentation.  
+%Load the help documentation for using MATLAB's two-way ANOVA function, called \textbf{anova2}, i.e.~ ">> doc anova2".
+%This documentation has a detailed explanation of all of the possible ways in which the function can be used.  
+%Read this information and then follow the example shown.  
+%This example will make use of one of the internal MATLAB dataset called \textbf{popcorn}.
+
+%\subsubsection{Further statistical analysis}
+%At this point, you may decide to export your data to a file format of your choice and conduct your statistical analysis using other software such as R or SPSS.
+%MATLAB's statistical toolbox is intended mainly for engineering purposes and lacks some of the tests and conventions necessary for sports and health science.
 
 \end{document}
 

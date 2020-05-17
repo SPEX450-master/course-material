@@ -1,0 +1,308 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{spex450_documents}
+
+\usepackage{dirtree}
+
+\title{Reproducible research}
+
+\author{Peter Lamb}
+
+\date{Week 6}
+
+\begin{document}
+
+\maketitle
+
+
+MATLAB offers many features that can help make your analysis run smoothly and efficiently.
+In this module we will look at a raw data set and create a script to perform several procedures.
+The benefit of scripting an analysis is that it allows you to easily trace back all of the operations performed on the data, which makes pinpointing mistakes much easier.
+The example in this section uses time-series data (one trial consists of many measurements: length of time for a trial $\times$ number of samples taken per unit of time), which are particularly difficult to manage using spreadsheets.
+Imagine having Excel sheets (rows for time samples, columns for variables) for each trial and different files for each participant: finding mistakes would be extremely painstaking, fixing a simple mistake that occurs on every sheet would take days, if not, weeks of work.
+By automating your analysis with a script, the same procedures can be performed multiple times, i.e.~in a loop, and your single mistake only needs to be fixed in one spot.
+We will also look at two options to help share your code with supervisors and collaborators.
+
+\section{Script for a single trial}
+\subsection{Commenting and organisation}
+Before we start our script, let's take a bit of time to think about how best to make our script easy to read and navigate.
+We've already seen how to include comments in Week 3.
+Comments allow you to describe in words what your code is doing and are preceded by "%", anything on the line afterwords is not executed. 
+Any script or function can also be divided into sections using "%%".
+Sections make reading a long script easier as the different steps are clearly divided and highlighted by the MATLAB editor (see \href{https://au.mathworks.com/help/matlab/matlab_prog/run-sections-of-programs.html}{\textcolor{blue}{here}} for more details).
+Sectioning also lets you run the code for one section at a time, which is helpful in larger projects.
+It is often a good idea, before you start writing the code for your script, to write all the comments in as much detail as possible.
+This will help you stick to the plan, even when you get bogged down with annoying little bugs and problems.
+
+\subsection{Reading in or loading data}
+To make our analysis reproducible we want it to run through its entirety just by running the script.
+This means we will not use the import wizard to read in our data, as this would introduce the possibility of reading in an old or wrong dataset, forgetting where on the computer the data are stored, how the data are formatted, etc.
+
+% Reiterating and clarifying what we've been doing so far. Explain why the zip files contain a folder structure. Check out /Tree from Gav.
+First, I encourage you to adopt a file and folder organisation system.
+For example, create a parent folder on your computer named after the project, and within that folder you might have a \textbf{code} folder, a \textbf{data} folder, a \textbf{documents} folder, and a \textbf{plots} folder (see Figure \ref{fig:folders} for an example).
+In this case keep all your data, whether raw or processed in the \textbf{data} folder, m-files (scripts or functions) in your \textbf{code} folder, and so on.
+\begin{figure}
+
+\dirtree{%
+.1 \includegraphics[height=1.5em]{Folder-icon}\ 2020\_thesis\_chap1.
+.2 \includegraphics[height=1.5em]{Folder-icon}\ code.
+.3 \includegraphics[height=1.5em]{Folder-icon}\ m-files.
+.4 \includegraphics[height=1.5em]{txt-icon}\ 01\_arrange\_data.m.
+.4 \includegraphics[height=1.5em]{txt-icon}\ 02\_plot\_data.m.
+.4 \includegraphics[height=1.5em]{txt-icon}\ 03\_stats\_analysis.m.
+.2 \includegraphics[height=1.5em]{Folder-icon}\ data.
+.3 \includegraphics[height=1.5em]{Folder-icon}\ mat.
+.4 \includegraphics[height=1.5em]{txt-icon}\ P1\_C1.mat.
+.3 \includegraphics[height=1.5em]{Folder-icon}\ raw.
+.4 \includegraphics[height=1.5em]{txt-icon}\ P1\_C1\_T1.txt.
+.4 \includegraphics[height=1.5em]{txt-icon}\ P1\_C1\_T2.txt.
+.2 \includegraphics[height=1.5em]{Folder-icon}\ documents.
+.3 \includegraphics[height=1.5em]{Folder-icon}\ ethics.
+.3 \includegraphics[height=1.5em]{Folder-icon}\ literature.
+.3 \includegraphics[height=1.5em]{Folder-icon}\ thesis.
+.4 \includegraphics[height=1.5em]{txt-icon}\ chapter1.docx.
+.2 \includegraphics[height=1.5em]{Folder-icon}\ plots.
+.3 \includegraphics[height=1.5em]{Folder-icon}\ boxplots.
+.3 \includegraphics[height=1.5em]{Folder-icon}\ figures.
+}
+\caption{Example project directory organisation}
+\label{fig:folders}
+\end{figure}
+
+Assuming this file and folder organisation, let's navigate to our parent folder – in our case the \textbf{6-Reproducible\_research} folder. 
+Next, to read in the file `P1\_C2\_T1.txt' in the \textbf{data} folder we will create a \emph{string} for the full file path.
+Navigating to the parent folder is important because the filename below is relative to the current directory.
+%There are many ways of doing this, one of the simplest is to simply append two strings as a vector (refer back to row vectors in Section \ref{sec:matrices}).
+\begin{lstlisting}[style=Matlab-editor]
+filename = 'data/P1_C2_T1.txt';
+\end{lstlisting}
+
+There is, however, one potential problem if you want to share your data and code with a collaborator or supervisor.
+The forward slash direction `/' in the filename variable is specific to Mac (Unix actually) operating systems; Windows operating systems use backslashes in filenames.
+An alternative method that makes your code more portable and shareable is to use the \textbf{fullfile} function.
+\begin{lstlisting}[style=Matlab-editor]
+>> filename = fullfile('data','P1_C2_T1.txt')
+
+filename =
+
+    'data/P1_C2_T1.txt'
+
+\end{lstlisting}
+
+If run on a Windows operating system, the slash will be changed.
+Now we have a string referring to the file we want to read -- notice that the instructions for creating the string are all part of the code, no interaction with dialog boxes is needed, we just need to have the project folder as our \textbf{Current Folder}.
+
+Reading in data from formatted files can be the most difficult part of scripting an analysis.
+For an overview of the various `input/output functions', type ">> doc iofun".
+If you open the text file with a text editor, you will notice there are several lines describing the participant, equipment and data collection parameters.
+On line 10 the numeric data begins, with rows corresponding to time samples, or measurements, and commas separating each variable until the final variable, at which point the line ends.
+The data are several kinematic variables describing a golf swing.
+To read in our text file we will use the \textbf{csvread} function.
+Again, see the documentation for how to use the function.
+Since we want to start reading in data from row 10, we want to employ a row offset of 9.
+We will read the data into MATLAB and store it as a matrix in a variable named \textbf{golfData}.
+\begin{lstlisting}[style=Matlab-editor]
+golfData = csvread(filename, 9, 0);
+\end{lstlisting}
+
+You should now be able to see the variable \textbf{golfData} in the workspace, where it is described as $\mathbf{486\times37}$ \textbf{double}. 
+Double refers to the precision of the variable and has implications for memory use.
+Considering the precision is only really important when dealing with very large datasets (e.g. >5 GB).
+%Double clicking on \textbf{golfData} will open the variable up in the \textbf{Variable Editor} to view the data much like a spreadsheet.
+%The \textbf{PLOTS} and \textbf{VARIABLE} tabs give you functionality in the \textbf{Variable Editor}.
+
+\subsection{Extracting discrete data}
+We have read in 486 time frames of 37 time-continuous variables describing one golf swing by one participant; in this example we are interested in extracting a few key variables.
+In golf swing biomechanics there is an important variable known as the `X-Factor', which represents the difference in axial rotation between the upper torso and the pelvis segments usually taken at the start of the downswing (see Figure \ref{fig:xfact}).
+When the downswing starts -- \textbf{defined by the change in rotation direction of the pelvis} -- the pelvis usually leads the rotation causing the X-Factor to increase.
+
+We want to extract the following variables from the dataset:
+\begin{enumerate}
+	\item the X-Factor value (at the start of the downswing),
+	\item the maximum X-Factor value,
+	\item the time between the start of the downswing and the maximum X-Factor value.
+\end{enumerate}
+
+While previewing the file `P1\_C2\_T1.txt' you may have noticed that the sampling frequency was recorded as 240 Hz; this is needed to compute the time elapsed between frames.
+We will start by writing out the comments to direct our thoughts on how to code this exercise.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{tiger_xfactor}
+\caption{Depiction of the X-factor variable. The second image in the sequence shows Tiger Woods at the transition from the backswing to the downswing, defined by the change in direction of pelvis rotation. Notice the difference in pelvis angular position compared to the thorax; this difference is known as the \emph{X-factor} and it is thought to initiate the stretch-shortening cycle in the early downswing.}
+\label{fig:xfact}
+\end{figure}
+\begin{lstlisting}[style=Matlab-editor]
+% Calculate the X-Factor throughout the swing
+
+
+% Determine the frame number of the start of the 
+% downswing and extract the X-Factor value.
+
+
+% Calculate the maximum X-Factor (actually minimum 
+% because angles are negative in the backswing).
+
+
+% Determine the number of frames between the start of the
+% downswing and the maximum X-Factor.
+
+
+% Convert from frames to seconds.
+
+\end{lstlisting}
+Seems simple enough, let's get to it. But first a couple notes about the dataset: pelvis axial rotation is column 14, and thorax axial rotation in column 17.
+By biomechanical convention, clockwise rotation is negative and counterclockwise is positive.
+Imagine a line passing through the hip joint centres and a line passing through the shoulder joint centres. 
+At the address position (first image in the sequence in Figure \ref{fig:xfact}) these lines would be roughly parallel with the target line (line between the ball and target) – this is our reference position, so parallel to the target line is represented by an angle of 0°. 
+When the golfer turns these segments away from the target the angle will be negative and when the golfer is turned toward the target the angle will be positive.
+Plot columns 14 and 17 to see for yourself.
+
+\begin{lstlisting}[style=Matlab-editor]
+% Calculate the X-Factor throughout the swing
+
+xfVector = golfData(:,17) - golfData(:,14);
+
+\end{lstlisting}
+
+The variable \textbf{xfVector} is the time-continuous difference between the pelvis and thorax angles.
+%We get a value for \textbf{minPelvis} of -56.7, which occurs at frame 195.
+
+\begin{lstlisting}[style=Matlab-editor]
+% Determine the frame number of the start of the 
+% downswing and extract the X-Factor value.
+
+[~,minIndex] = min(golfData(:,14));
+
+xf = xfVector(minIndex);
+\end{lstlisting}
+
+Here we used the \textbf{min} function because the values for this part of the swing are negative.
+We then extracted the value of \textbf{xfVector} at the frame number held in \textbf{minIndex}.
+ 
+\begin{lstlisting}[style=Matlab-editor]
+% Calculate the maximum X-Factor (actually minimum 
+% because angles are negative in the backswing).
+
+[xfMin,xfMinInd] = min(xfVector);
+\end{lstlisting}
+
+Here we use the \textbf{min} function to get both the value and the frame number of the minimum value of \textbf{xfVector}.
+
+\begin{lstlisting}[style=Matlab-editor]
+% Determine the number of frames between the start of the
+% downswing and the maximum X-Factor.
+
+framesToMin = xfMinInd - minIndex;
+
+% Convert from frames to seconds.
+
+timeToMin = framesToMin / 250;
+\end{lstlisting}
+
+The variable \textbf{timeToMin} is 0.2160, which tells us that the maximum separation of the pelvis and thorax occurred 0.216 s into the downswing of the measured swing.
+
+Likewise, we can define any variable for extraction according to our research question.
+In a large study with multiple participants and trials, this process of reading in data and calculating a dependent variable can be performed automatically by using carefully set up loops.
+
+\subsection{Visualising data}
+It is always a good idea to plot your data, either to include in your write-up or just as a way to double check that what you have calculated makes sense.
+See the \textbf{figure} and \textbf{plot} documentation if any of the commands below are new or confusing.
+
+\begin{lstlisting}[style=Matlab-editor]
+% Plot data
+figure('Units', 'centimeters',...
+    'Position', [5 5 12 8])
+
+frames = 1 : length(golfData);
+
+time = frames / 250;
+
+plot(time, golfData(:,14), 'b-')
+
+hold on
+
+plot(time, golfData(:,17), 'r-')
+
+plot(time, xfVector, 'k--')
+
+plot(time(minIndex), minVal, 'ro')
+
+plot(time(xfMinInd), xfMin, 'bo')
+
+xlabel('Time (s)'); ylabel('Angle (deg)')
+
+legend({'pelvis','thorax','x-factor',...
+    'start downswing','max x-factor'}, ...
+    'Location', 'best',...
+    'Box', 'off')
+\end{lstlisting}
+The above code should produce the following plot.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{xfactor_exportfig.png}
+\caption{X-Factor, pelvis and thorax angular displacement plotted versus time. Minimum X-Factor and pelvis angular displacement are highlighted. Check that time separation between minimum values of 0.216 s appears correct.}
+\label{xfactor}
+\end{figure}
+
+\subsection{Sharing your code}
+Let's return to the idea of commenting our code to improve readability – improving your code's readability is not just for you.
+MATLAB offers two useful features for sharing your processing and analysis with supervisors or collaborators: 1) publishing to a formatted file and 2) a live script.
+
+\subsubsection{Publishing your m-file}
+Open the m-file `xf\_script.m' located in the code folder.
+The script contains essentially what's been covered in this document so far, with a few minor additions.
+Notice the placing of "%%" signs to indicate sections, and a few helpful text descriptions of the code.
+In the \textbf{Editor} window, click on the \textbf{Publish} tab and then the drop down box below the \textbf{Publish} button.
+Choose \textbf{Edit Publishing Options...}.
+Here you can choose several options for publishing your m-file; select either a Word file or pdf as the \textbf{Output File Format}, and then click the \textbf{Publish} button.
+The result is a formatted documented that's formatted your comments as regular text, your sections as sections (the first one is the title) and even included a Table of Contents if you didn't suppress it in the publishing options.
+MATLAB also offers assistance for creating formatted text; when in the \textbf{Publish} tab of the \textbf{Editor} you will see some buttons that help you create sections, equations, bold text, etc.
+
+Publishing your script as a document this way allows you to build a report in the Editor that shows your results.
+Your supervisor may not use MATLAB and, therefore, might not have MATLAB installed to check what you're doing. 
+The published script allows him or her to read detailed descriptions of your code and justifications and interpretations of your analysis with all the code and output shown.
+Notice how I've left out the semicolon on line 52 to output the value of the \emph{stretch} variable to the document.
+
+\subsubsection{Live script}
+Open the `xf\_script\_live.mlx' file in the code folder to view the Live Script version of this script.
+MATLAB live scripts are files that contain your code, show your figures and formatted text.
+Live scripts are a great way of sharing your code because it gives the collaborator a look at the code behind the output, but is much more readable than a simple m-file.
+
+To produce a live script click \textbf{Save as} in the in the \textbf{Editor} tab and select \textbf{Live Script} with the .mlx extension.
+Similar to publishing your m-file in the \textbf{Live Editor} tab there are several useful tools for formatting your document.
+While a Live Script is useful for explaining your code and showing your process, it does rely on your supervisor or collaborator using MATLAB.
+If they do not use MATLAB, you may choose to publish your script to .docx, or .pdf file instead.
+
+
+%\subsection{Exporting data}
+%You will likely include many more processing steps in a larger project than have been included in this example script, but hopefully the basic steps have been outlined enough to get you started.
+%The final step is often exported or saving your data.
+%
+%Data can be exported so that they can be imported using other software, such as SPSS or R.
+%As mentioned earlier, MATLAB's statistics are mainly aimed at engineering purposes and may not be sufficient for the goals of your project -- in which case you will want to export key variables after reading in and processing your data.
+%The most common function you will use for exporting data will likely be \textbf{csvwrite} and \textbf{xlswrite} (although as of version 2016a xlswrite does not work well on a Mac; alternatively see the File Exchange for user contributed functions, in particular \href{http://au.mathworks.com/matlabcentral/fileexchange/37560-xlwrite---export-data-to-excel-from-matlab-on-mac-win}{xlwrite}).
+%
+%\begin{lstlisting}[style=Matlab-editor]
+%%% Export data to Excel
+%xlswrite('data/XFactor.xlsx', xfVector)
+%\end{lstlisting}
+%
+%In other circumstances, you may find that your process for reading in information from multiple text files is very time consuming because of either the number or size of the files.
+%In this case, it may be a good idea to read in the data once and save as a convenient format.
+%
+%\begin{lstlisting}[style=Matlab-editor]
+%save('Example data/raw_data.mat', 'golfData')
+%\end{lstlisting}
+%A new script file, e.g.~process\_golf\_data.m, can then be created starting with:
+%
+%\begin{lstlisting}[style=Matlab-editor]
+%filename = 'data/raw_data.mat';
+%load(filename)
+%\end{lstlisting}
+%Breaking your analysis into steps can make it easier and quicker to focus on certain steps of your analysis.
+%Once you're satisfied with a specific step, save the variables of interest and load them into a script for the next step.
+%
+\end{document}
+%I hope that after going through this tutorial and gaining and understanding of the importance of manipulating and reshaping your data to fit the input requirements of different functions that the R environment would be your first choice.
+%At the end of the day, you need to have the appropriate analysis done and it should be reproducible -- if you can accomplish that, it does not matter which software you use.
